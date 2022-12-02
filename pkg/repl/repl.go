@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/darragh-downey/twerp/pkg/evaluator"
 	"github.com/darragh-downey/twerp/pkg/lexer"
 	"github.com/darragh-downey/twerp/pkg/parser"
 )
@@ -35,8 +36,11 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		io.WriteString(out, program.String())
-		io.WriteString(out, "\n")
+		evaluated := evaluator.Eval(program)
+		if evaluated != nil {
+			io.WriteString(out, evaluated.Inspect())
+			io.WriteString(out, "\n")
+		}
 	}
 }
 
