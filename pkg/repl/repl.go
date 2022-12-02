@@ -7,6 +7,7 @@ import (
 
 	"github.com/darragh-downey/twerp/pkg/evaluator"
 	"github.com/darragh-downey/twerp/pkg/lexer"
+	"github.com/darragh-downey/twerp/pkg/object"
 	"github.com/darragh-downey/twerp/pkg/parser"
 )
 
@@ -18,6 +19,7 @@ TWERP
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+	env := object.NewEnvironment()
 
 	for {
 		fmt.Fprintf(out, PROMPT)
@@ -36,7 +38,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(program)
+		evaluated := evaluator.Eval(program, env)
 		if evaluated != nil {
 			io.WriteString(out, evaluated.Inspect())
 			io.WriteString(out, "\n")
