@@ -25,20 +25,30 @@ const (
 	ASTERISK = "*"
 	SLASH    = "/"
 
-	LT = "<"
-	GT = ">"
+	// Extended assign operators
+	P_ASSIGN = "+="
+	M_ASSIGN = "-="
+	A_ASSIGN = "*="
+	S_ASSIGN = "/="
 
+	// Comparison operators
+	LT     = "<"
+	GT     = ">"
 	EQ     = "=="
 	NOT_EQ = "!="
+	LT_EQ  = "<="
+	GT_EQ  = ">="
 
 	//Delimiters
 	COMMA     = ","
 	SEMICOLON = ";"
 
-	LPAREN = "("
-	RPAREN = ")"
-	LBRACE = "{"
-	RBRACE = "}"
+	LPAREN   = "("
+	RPAREN   = ")"
+	LBRACE   = "{"
+	RBRACE   = "}"
+	LBRACKET = "["
+	RBRACKET = "]"
 
 	// Keywords
 	FUNCTION = "FUNCTION"

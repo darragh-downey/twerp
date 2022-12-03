@@ -28,6 +28,16 @@ func TestNextToken(t *testing.T) {
 	10 != 9;
 	"foobar"
 	"foo bar"
+
+	[1, 2];
+
+	23 <= 24;
+	4 >= 1;
+
+	ten *= 2;
+	ten /= 2;
+	ten += 2;
+	ten -= 2;
 	`
 
 	tests := []struct {
@@ -113,6 +123,43 @@ func TestNextToken(t *testing.T) {
 
 		{token.STRING, "foobar"},
 		{token.STRING, "foo bar"},
+
+		{token.LBRACKET, "["},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "2"},
+		{token.RBRACKET, "]"},
+		{token.SEMICOLON, ";"},
+
+		{token.INT, "23"},
+		{token.LT_EQ, "<="},
+		{token.INT, "24"},
+		{token.SEMICOLON, ";"},
+
+		{token.INT, "4"},
+		{token.GT_EQ, ">="},
+		{token.INT, "1"},
+		{token.SEMICOLON, ";"},
+
+		{token.IDENT, "ten"},
+		{token.A_ASSIGN, "*="},
+		{token.INT, "2"},
+		{token.SEMICOLON, ";"},
+
+		{token.IDENT, "ten"},
+		{token.S_ASSIGN, "/="},
+		{token.INT, "2"},
+		{token.SEMICOLON, ";"},
+
+		{token.IDENT, "ten"},
+		{token.P_ASSIGN, "+="},
+		{token.INT, "2"},
+		{token.SEMICOLON, ";"},
+
+		{token.IDENT, "ten"},
+		{token.M_ASSIGN, "-="},
+		{token.INT, "2"},
+		{token.SEMICOLON, ";"},
 
 		{token.EOF, ""},
 	}
