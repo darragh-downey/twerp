@@ -1,6 +1,10 @@
 package lexer
 
-import "github.com/darragh-downey/twerp/pkg/token"
+import (
+	"fmt"
+
+	"github.com/darragh-downey/twerp/pkg/token"
+)
 
 type Lexer struct {
 	input        string // user input to parse
@@ -13,6 +17,16 @@ func New(input string) *Lexer {
 	l := &Lexer{input: input}
 	l.readChar()
 	return l
+}
+
+// TODO: delete - using for tracing a ']' bug
+func (l *Lexer) Info() string {
+	return l.input
+}
+
+// TODO: delete - using for tracing a ']' bug
+func (l *Lexer) Busted() string {
+	return fmt.Sprintf("position=%d readPostition=%d char=%q", l.position, l.readPosition, l.ch)
 }
 
 func (l *Lexer) readChar() {
@@ -128,6 +142,9 @@ func (l *Lexer) NextToken() token.Token {
 	case '"':
 		tok.Type = token.STRING
 		tok.Literal = l.readString()
+
+	case ':':
+		tok = newToken(token.COLON, l.ch)
 
 	case 0:
 		tok.Literal = ""

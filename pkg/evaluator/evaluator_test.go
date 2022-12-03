@@ -234,31 +234,6 @@ func TestFunctionApplication(t *testing.T) {
 	}
 }
 
-func testEval(input string) object.Object {
-	l := lexer.New(input)
-	p := parser.New(l)
-
-	program := p.ParseProgram()
-	env := object.NewEnvironment()
-
-	return Eval(program, env)
-}
-
-func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
-	result, ok := obj.(*object.Integer)
-	if !ok {
-		t.Errorf("object is not Integer. got=%T (%+v)", obj, obj)
-		return false
-	}
-
-	if result.Value != expected {
-		t.Errorf("Object has wrong value. got=%d, want=%d", result.Value, expected)
-		return false
-	}
-
-	return true
-}
-
 func TestStringLiteral(t *testing.T) {
 	input := `"Hello World!"`
 
@@ -315,6 +290,98 @@ func TestBuiltinFunctions(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestArrayLiterals(t *testing.T) {
+	input := "[1, 2 * 2, 3 + 3]"
+
+	evaluated := testEval(input)
+	result, ok := evaluated.(*object.Array)
+	if !ok {
+		t.Fatalf("object is not Array. got=%T (%+v)", evaluated, evaluated)
+	}
+
+	if len(result.Elements) != 3 {
+		t.Fatalf("array has the wrong number of elements. got=%d", len(result.Elements))
+	}
+
+	testIntegerObject(t, result.Elements[0], 1)
+	testIntegerObject(t, result.Elements[1], 4)
+	testIntegerObject(t, result.Elements[2], 6)
+}
+
+func TestArrayIndexExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{
+			"[1, 2, 3][0]",
+			1,
+		},
+		{
+			"[1, 2, 3][-1]",
+			nil, // TODO: make this work similar to Python
+		},
+		{
+			"[1, 2, 3][1]",
+			2,
+		},
+		{
+			"let i = 0; [1][i];",
+			1,
+		},
+		{
+			"[1, 2, 3][1+1];",
+			3,
+		},
+		{
+			"let myArray = [1, 2, 3]; myArray[2];",
+			3,
+		},
+		{
+			"let myArray = [1, 2, 3]; myArray[1] + myArray[2] + myArray[0];",
+			6,
+		},
+		{
+			"[1, 2, 3][3]",
+			nil,
+		},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		if integer, ok := tt.expected.(int); ok {
+			testIntegerObject(t, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
+func testEval(input string) object.Object {
+	l := lexer.New(input)
+	p := parser.New(l)
+
+	program := p.ParseProgram()
+	env := object.NewEnvironment()
+
+	return Eval(program, env)
+}
+
+func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
+	result, ok := obj.(*object.Integer)
+	if !ok {
+		t.Errorf("object is not Integer. got=%T (%+v) expected=%d", obj, obj, expected)
+		return false
+	}
+
+	if result.Value != expected {
+		t.Errorf("Object has wrong value. got=%d, want=%d", result.Value, expected)
+		return false
+	}
+
+	return true
 }
 
 func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
