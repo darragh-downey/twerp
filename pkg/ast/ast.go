@@ -340,9 +340,9 @@ func (hl *HashLiteral) String() string {
 		pairs = append(pairs, k.String()+":"+v.String())
 	}
 
-	out.WriteString("(")
+	out.WriteString("{")
 	out.WriteString(strings.Join(pairs, ", "))
-	out.WriteString(") ")
+	out.WriteString("}")
 
 	return out.String()
 }
