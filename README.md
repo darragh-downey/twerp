@@ -83,7 +83,7 @@ Create a new array by adding an element to the end of the array `x`:
 push(x, 5)
 ```
 
-A design decision in the Monkey language prevents modification of variables so don't go expecting `x` to update just yet.
+A design decision prevents modification of variables, so don't go expecting `x` to update just yet.
 
 ##### puts
 
