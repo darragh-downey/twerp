@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/darragh-downey/twerp/pkg/evaluator"
+	"github.com/darragh-downey/twerp/pkg/compiler"
 	"github.com/darragh-downey/twerp/pkg/lexer"
-	"github.com/darragh-downey/twerp/pkg/object"
 	"github.com/darragh-downey/twerp/pkg/parser"
+	"github.com/darragh-downey/twerp/pkg/vm"
 )
 
 const PROMPT = ">> "
@@ -19,7 +19,8 @@ TWERP
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
-	env := object.NewEnvironment()
+	// env := object.NewEnvironment()
+	comp := compiler.New()
 
 	for {
 		fmt.Fprintf(out, PROMPT)
@@ -38,11 +39,26 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(program, env)
-		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
-			io.WriteString(out, "\n")
+		if err := comp.Compile(program); err != nil {
+			fmt.Fprintf(out, "Woops! Compilation failed:\n %s\n", err)
+			continue
 		}
+
+		machine := vm.New(comp.Bytecode())
+		if err := machine.Run(); err != nil {
+			fmt.Fprintf(out, "Woops! Executing bytecode failed:\n %s\n", err)
+			continue
+		}
+
+		stackTop := machine.StackTop()
+		io.WriteString(out, stackTop.Inspect())
+		io.WriteString(out, "\n")
+
+		// evaluated := evaluator.Eval(program, env)
+		//if evaluated != nil {
+		//	io.WriteString(out, evaluated.Inspect())
+		//	io.WriteString(out, "\n")
+		//}
 	}
 }
 
